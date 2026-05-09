@@ -5,46 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Number Fun Game</title>
     <style>
-        /* This section makes it look pretty */
+        /* This section recreates the Replit "Outlook" */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Blue/Purple Gradient Background */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+
         .container {
             background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             text-align: center;
+            max-width: 400px;
+            width: 90%;
         }
-        h1 { color: #2c3e50; }
-        input {
-            padding: 10px;
+
+        h1 {
+            color: #333;
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        p {
+            color: #666;
             font-size: 16px;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            width: 100px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
+
+        input {
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #764ba2;
+        }
+
         button {
-            padding: 10px 20px;
-            background-color: #3498db;
+            padding: 12px 25px;
+            background-color: #764ba2;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: transform 0.2s, background 0.3s;
         }
-        button:hover { background-color: #2980b9; }
+
+        button:hover {
+            background-color: #5a377d;
+            transform: translateY(-2px);
+        }
+
         #message {
             margin-top: 20px;
             font-weight: bold;
-            min-height: 24px;
+            font-size: 18px;
+            min-height: 25px;
+        }
+
+        #resetBtn {
+            margin-top: 15px;
+            background-color: #27ae60;
+            display: none; /* Hidden until you win */
         }
     </style>
 </head>
@@ -52,49 +94,69 @@
 
     <div class="container">
         <h1>Number Fun!</h1>
-        <p>Guess the number between 1 and 100</p>
-        <input type="number" id="guessInput" placeholder="0">
+        <p>I'm thinking of a number between 1 and 100.</p>
+        
+        <input type="number" id="guessInput" placeholder="Enter your guess">
         <button onclick="checkGuess()">Submit Guess</button>
+        
         <p id="message"></p>
-        <button id="resetBtn" onclick="resetGame()" style="display:none;">Play Again</button>
+        <button id="resetBtn" onclick="resetGame()">Play Again</button>
     </div>
 
     <script>
-        /* This section makes the game work */
+        // Game Logic
         let randomNumber = Math.floor(Math.random() * 100) + 1;
         let attempts = 0;
 
+        const input = document.getElementById('guessInput');
+        const message = document.getElementById('message');
+        const resetBtn = document.getElementById('resetBtn');
+
         function checkGuess() {
-            const input = document.getElementById('guessInput');
-            const message = document.getElementById('message');
-            const resetBtn = document.getElementById('resetBtn');
             const guess = parseInt(input.value);
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                updateMessage("Please enter a number (1-100)", "#e67e22");
+                return;
+            }
+
             attempts++;
 
-            if (isNaN(guess) || guess < 1 || guess > 100) {
-                message.textContent = "Please enter a valid number (1-100).";
-                message.style.color = "orange";
-            } else if (guess === randomNumber) {
-                message.textContent = `Correct! You found it in ${attempts} tries.`;
-                message.style.color = "green";
-                resetBtn.style.display = "inline-block";
+            if (guess === randomNumber) {
+                updateMessage(`🎉 Correct! Tries: ${attempts}`, "#27ae60");
+                resetBtn.style.display = "block";
+                input.disabled = true;
             } else if (guess < randomNumber) {
-                message.textContent = "Too low! Try again.";
-                message.style.color = "red";
+                updateMessage("Too low! 📉", "#e74c3c");
             } else {
-                message.textContent = "Too high! Try again.";
-                message.style.color = "red";
+                updateMessage("Too high! 📈", "#e74c3c");
             }
+
             input.value = '';
+            input.focus();
+        }
+
+        function updateMessage(msg, color) {
+            message.textContent = msg;
+            message.style.color = color;
         }
 
         function resetGame() {
             randomNumber = Math.floor(Math.random() * 100) + 1;
             attempts = 0;
-            document.getElementById('message').textContent = "";
-            document.getElementById('resetBtn').style.display = "none";
-            document.getElementById('guessInput').value = "";
+            input.disabled = false;
+            input.value = '';
+            message.textContent = "";
+            resetBtn.style.display = "none";
+            input.focus();
         }
+
+        // Support for "Enter" key
+        input.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                checkGuess();
+            }
+        });
     </script>
 </body>
 </html>
