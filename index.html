@@ -4,97 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Number Fun Game</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        p { color: #7f8c8d; }
+
+        input {
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 80%;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus { border-color: #3498db; }
+
+        button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover { background-color: #2980b9; }
+
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            min-height: 27px;
+        }
+
+        #resetBtn {
+            margin-top: 15px;
+            background-color: #27ae60;
+        }
+
+        #resetBtn:hover { background-color: #219150; }
+    </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Number Fun!</h1>
-        <p>Guess the number between 1 and 100</p>
-        <input type="number" id="guessInput" placeholder="Enter your guess">
+        <p>I'm thinking of a number between 1 and 100. Can you guess it?</p>
+        
+        <input type="number" id="guessInput" placeholder="Enter guess" min="1" max="100">
+        <br>
         <button onclick="checkGuess()">Submit Guess</button>
+        
         <p id="message"></p>
         <button id="resetBtn" onclick="resetGame()" style="display:none;">Play Again</button>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // JavaScript Logic
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+
+        const input = document.getElementById('guessInput');
+        const message = document.getElementById('message');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Allow pressing "Enter" key to submit
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkGuess();
+            }
+        });
+
+        function checkGuess() {
+            const guess = parseInt(input.value);
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                displayMessage("Please enter a number between 1 and 100.", "#e67e22");
+                return;
+            }
+
+            attempts++;
+
+            if (guess === randomNumber) {
+                displayMessage(`🎉 Correct! It took you ${attempts} tries.`, "#27ae60");
+                resetBtn.style.display = "inline-block";
+                input.disabled = true;
+            } else if (guess < randomNumber) {
+                displayMessage("Too low! Try a higher number.", "#e74c3c");
+            } else {
+                displayMessage("Too high! Try a lower number.", "#e74c3c");
+            }
+
+            input.value = '';
+            input.focus();
+        }
+
+        function displayMessage(msg, color) {
+            message.textContent = msg;
+            message.style.color = color;
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            input.disabled = false;
+            input.value = '';
+            message.textContent = "";
+            resetBtn.style.display = "none";
+            input.focus();
+        }
+    </script>
 </body>
 </html>
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f8ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-h1 { color: #2c3e50; }
-
-input {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #3498db;
-    border-radius: 5px;
-    width: 100px;
-    margin-bottom: 10px;
-}
-
-button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover { background-color: #2980b9; }
-
-#message {
-    margin-top: 20px;
-    font-weight: bold;
-    min-height: 24px;
-}
-let randomNumber = Math.floor(Math.random() * 100) + 1;
-let attempts = 0;
-
-function checkGuess() {
-    const input = document.getElementById('guessInput');
-    const message = document.getElementById('message');
-    const resetBtn = document.getElementById('resetBtn');
-    const guess = parseInt(input.value);
-    attempts++;
-
-    if (isNaN(guess) || guess < 1 || guess > 100) {
-        message.textContent = "Please enter a valid number between 1 and 100.";
-        message.style.color = "orange";
-    } else if (guess === randomNumber) {
-        message.textContent = `Correct! You found it in ${attempts} tries.`;
-        message.style.color = "green";
-        resetBtn.style.display = "inline-block";
-    } else if (guess < randomNumber) {
-        message.textContent = "Too low! Try again.";
-        message.style.color = "red";
-    } else {
-        message.textContent = "Too high! Try again.";
-        message.style.color = "red";
-    }
-    input.value = '';
-}
-
-function resetGame() {
-    randomNumber = Math.floor(Math.random() * 100) + 1;
-    attempts = 0;
-    document.getElementById('message').textContent = "";
-    document.getElementById('resetBtn').style.display = "none";
-    document.getElementById('guessInput').value = "";
-}
